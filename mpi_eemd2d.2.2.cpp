@@ -3,8 +3,10 @@
 // modified 2013/12/20 : For better stablity, only the root node reads the input txt file.
 // v.2.0    2014/04/30 : Interpolation engine changes to ALGLIB
 // v.2.1    2014/05/05 : Better memory ultilization
+// v.2.2 	2014/05/07 : use binary file for export
 
 #include <iostream>
+#include <cstdio>
 #include <cstdlib>
 #include <ctime>
 #include <cmath>
@@ -322,7 +324,7 @@ int main(int argc, char *argv[])
 		//sprintf(timecode_str, "%d", timecode);
 		string filenameStr(argv[1]);
 		string filename_export // v
-		 = string(filenameStr,0,filenameStr.length()-4)+"_modes" + timecode_str + ".m";
+		 = string(filenameStr,0,filenameStr.length()-4)+"_modes" + timecode_str + ".bin";
 		string filename_log    // v
 		 = string(filenameStr,0,filenameStr.length()-4)+"_log" + timecode_str + ".txt";
 		printArray(filename_export, modes, dim2, lg2);
@@ -345,43 +347,28 @@ int main(int argc, char *argv[])
 
 
 void printArray(string filename, double *Y, int dim, int* lg) {
-	int U = 1;
-	int V = 1;
-	int W = 1;
-	ofstream fout;
-	fout.open(filename.c_str());
-	switch (dim) {
-	case 1:
-		U = lg[0];
-		fout << "A = zeros(" << U << ");" << endl;
-		break;
-	case 2:
-		U = lg[0];
-		V = lg[1];
-		fout << "A = zeros(" << U << ", " << V << ");" << endl;
-		break;
-	case 3:
-		U = lg[0];
-		V = lg[1];
-		W = lg[2];
-		fout << "A = zeros(" << U << ", " << V << ", " << W << ");" << endl;
-		break;
-	default:
-		break;
+	
+	FILE *file;
+	char filename_char[20];
+	strcpy(filename_char, filename.c_str()); 
+	file = fopen(filename_char , "wb");
+
+	
+	// first byte: dimension number
+	fwrite(&dim, sizeof(int), 1, file);
+
+	// 2nd~4th bytes: size in each dimension
+	int sz = 1;
+	for (int i = 0; i < dim; i++) {
+		sz *= lg[i];
+		fwrite(&lg[i], sizeof(int), 1, file);
 	}
-	for (int k = 0; k < W; k++) {
-		fout << "A(:, :, " << k+1 << ") = [";
-		for(int i = 0; i < U; i++) {
-			for (int j = 0; j < V; j++) {
-				fout << Y[i + U * (j + k * V )] << " ";
-				if ((j+1) % 10 == 0)
-					fout << "... " << endl;
-			}
-			fout << ";" << endl;
-		}
-		fout << "]; " << endl;
-	}
-	fout.close();
+
+	// remaing bytes: data (double)
+	fwrite(Y, sizeof(double), sz, file);	
+
+	// close file
+	fclose(file);
 }
 
 int toDo(int N, int myrank, int world_size) {
