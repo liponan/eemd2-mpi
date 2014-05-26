@@ -1,7 +1,7 @@
 // mpi_eemd2d.cpp
 // written by Neil Po-Nan Li 2012/11/23 @ IPAS
 // modified 2013/12/20 : For better stablity, only the root node reads the input txt file.
-// v.2.0    2014/04/30 : Interpolation engine changes to ALGLIB
+// v.2.0    2014/04/30 : Interpolation engine changed to GSL
 // v.2.1    2014/05/05 : Better memory ultilization
 // v.2.2 	2014/05/07 : use binary file for export
 // v.2.3 	2014/05/26 : read binary file as input
@@ -40,12 +40,9 @@ int main(int argc, char *argv[])
 	int dt, eta_time;
 	int dim = 0;
 	int d = 0;
-	int lg[3] = {1};
+	int lg[3] = {0};
 	bool flag = true;
 	int H, W, SZ;
-
-	ifstream fin;
-	string tmpStr;
 
 	int bin_flag1 = 1;
 	int bin_flag2 = 1;
@@ -357,7 +354,7 @@ int readBinaryImage(double *Y, string filename) {
 	file = fopen(filename_char , "r");
 
 	int dim = 0;
-	int lg[3] = {1};
+	int lg[3] = {0};
 
 	// first byte: dimension number
 	fread(&dim, sizeof(int), 1, file);
