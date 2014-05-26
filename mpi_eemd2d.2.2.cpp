@@ -4,6 +4,9 @@
 // v.2.0    2014/04/30 : Interpolation engine changes to ALGLIB
 // v.2.1    2014/05/05 : Better memory ultilization
 // v.2.2 	2014/05/07 : use binary file for export
+// v.2.3 	2014/05/26 : read binary file as input
+
+
 
 #include <iostream>
 #include <cstdio>
