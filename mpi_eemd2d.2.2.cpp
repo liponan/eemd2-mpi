@@ -331,10 +331,13 @@ int main(int argc, char *argv[])
 	return 0;
 }
 
-int readBinaryHeader(int* dim, int* lg, string filename) {
+int readBinaryHeader(int *dim, int *lg, string filename) {
 	FILE *file;
 	char filename_char[20];
 	strcpy(filename_char, filename.c_str()); 
+
+	cout << "Reading header of " << filename << endl;
+
 	file = fopen(filename_char , "rb");
 
 	// first byte: dimension number
@@ -344,6 +347,7 @@ int readBinaryHeader(int* dim, int* lg, string filename) {
 	for (int i = 0; i < *dim; i++) {
 		fread(&lg[i], sizeof(int), 1, file);
 	} // end of for
+	fclose(file);
 	return 0;
 }
 
@@ -352,6 +356,7 @@ int readBinaryImage(double *Y, string filename) {
 	char filename_char[20];
 	strcpy(filename_char, filename.c_str()); 
 	file = fopen(filename_char , "rb");
+	rewind(file);
 
 	int dim = 0;
 	int lg[3] = {0};
@@ -368,16 +373,16 @@ int readBinaryImage(double *Y, string filename) {
 
 	// remaing bytes: data (double)
 	fread(Y, sizeof(double), sz, file);
+	fclose(file);
 	return 0;
 }
 
-void writeBinary(string filename, int dim, int* lg, double *Y) {
+void writeBinary(string filename, int dim, int *lg, double *Y) {
 	
 	FILE *file;
 	char filename_char[20];
 	strcpy(filename_char, filename.c_str()); 
 	file = fopen(filename_char , "wb");
-	rewind (file);
 	
 	// first byte: dimension number
 	fwrite(&dim, sizeof(int), 1, file);
