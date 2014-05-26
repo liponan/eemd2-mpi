@@ -21,7 +21,7 @@
 
 	using namespace std;
 
-	void printArray(string, double*, int, int*);
+	void writeBinary(string, double*, int, int*);
 	int toDo(int, int, int);
 
 int main(int argc, char *argv[])
@@ -348,8 +348,7 @@ int main(int argc, char *argv[])
 }
 
 
-
-void printArray(string filename, double *Y, int dim, int* lg) {
+void writeBinary(string filename, double *Y, int dim, int* lg) {
 	
 	FILE *file;
 	char filename_char[20];
