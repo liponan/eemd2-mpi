@@ -335,7 +335,7 @@ int readBinaryHeader(int* dim, int* lg, string filename) {
 	FILE *file;
 	char filename_char[20];
 	strcpy(filename_char, filename.c_str()); 
-	file = fopen(filename_char , "r");
+	file = fopen(filename_char , "rb");
 
 	// first byte: dimension number
 	fread(dim, sizeof(int), 1, file);
@@ -351,7 +351,7 @@ int readBinaryImage(double *Y, string filename) {
 	FILE *file;
 	char filename_char[20];
 	strcpy(filename_char, filename.c_str()); 
-	file = fopen(filename_char , "r");
+	file = fopen(filename_char , "rb");
 
 	int dim = 0;
 	int lg[3] = {0};
@@ -376,8 +376,8 @@ void writeBinary(string filename, int dim, int* lg, double *Y) {
 	FILE *file;
 	char filename_char[20];
 	strcpy(filename_char, filename.c_str()); 
-	file = fopen(filename_char , "w");
-
+	file = fopen(filename_char , "wb");
+	rewind (file);
 	
 	// first byte: dimension number
 	fwrite(&dim, sizeof(int), 1, file);
