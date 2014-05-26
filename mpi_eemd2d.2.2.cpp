@@ -21,7 +21,8 @@
 
 	using namespace std;
 
-	void writeBinary(string, double*, int, int*);
+	void readBinary(string, double*, int, int*);
+	void writeBinary(string filename, int dim, int* lg, double *Y);
 	int toDo(int, int, int);
 
 int main(int argc, char *argv[])
@@ -330,7 +331,7 @@ int main(int argc, char *argv[])
 		 = string(filenameStr,0,filenameStr.length()-4)+"_modes" + timecode_str + ".bin";
 		string filename_log    // v
 		 = string(filenameStr,0,filenameStr.length()-4)+"_log" + timecode_str + ".txt";
-		printArray(filename_export, modes, dim2, lg2);
+		writeBinary(filename_export, dim2, lg2, modes);
 		cout << filename_export << " exported!" << endl;
 		ofstream fout(filename_log.c_str());
 		fout << "Input: " << filenameStr << endl;
@@ -348,7 +349,7 @@ int main(int argc, char *argv[])
 }
 
 
-void writeBinary(string filename, double *Y, int dim, int* lg) {
+void writeBinary(string filename, int dim, int* lg, double *Y) {
 	
 	FILE *file;
 	char filename_char[20];
