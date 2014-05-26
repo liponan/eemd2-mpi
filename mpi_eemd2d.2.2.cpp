@@ -309,9 +309,9 @@ int main(int argc, char *argv[])
 		//sprintf(timecode_str, "%d", timecode);
 		string filenameStr(argv[1]);
 		string filename_export // v
-		 = string(filenameStr,0,filenameStr.length()-4)+"_" + timecode_str + ".modes";
+		 = string(filenameStr,0,filenameStr.length()-0)+"_" + timecode_str + ".modes";
 		string filename_log    // v
-		 = string(filenameStr,0,filenameStr.length()-4)+"_" + timecode_str + ".log";
+		 = string(filenameStr,0,filenameStr.length()-0)+"_" + timecode_str + ".log";
 		writeBinary(filename_export, dim2, lg2, modes);
 		cout << filename_export << " exported!" << endl;
 		ofstream fout(filename_log.c_str());
