@@ -16,14 +16,12 @@
 #include <string>
 #include <fstream>
 #include <mpi.h>
-
+#include "binaryIO.cpp"
 #include "eemd.cpp"
 
 	using namespace std;
 
-	int readBinaryHeader(int* dim, int* lg, string filename);
-	int readBinaryImage(double *Y, string filename);
-	void writeBinary(string filename, int dim, int* lg, double *Y);
+	
 	int toDo(int, int, int);
 
 int main(int argc, char *argv[])
@@ -331,84 +329,7 @@ int main(int argc, char *argv[])
 	return 0;
 }
 
-int readBinaryHeader(int *dim, int *lg, string filename) {
-	FILE *file;
-	char filename_char[20];
-	strcpy(filename_char, filename.c_str()); 
-	file = fopen(filename_char , "rb");
 
-	// first byte: dimension number
-	fread(dim, sizeof(int), 1, file);
-
-	// 2nd~4th bytes: size in each dimension
-	for (int i = 0; i < *dim; i++) {
-		fread(&lg[i], sizeof(int), 1, file);
-	} // end of for
-	fclose(file);
-	return 0;
-}
-
-int readBinaryImage(double *Y, string filename) {
-	FILE *file;
-	char filename_char[20];
-	strcpy(filename_char, filename.c_str()); 
-	file = fopen(filename_char , "rb");
-	rewind(file);
-
-	int dim = 0;
-	int lg[3] = {0};
-
-	// first byte: dimension number
-	fread(&dim, sizeof(int), 1, file);
-	cout << "Dim = " << dim << ": ";
-
-	// 2nd~4th bytes: size in each dimension
-	int sz = 1;
-	for (int i = 0; i < dim; i++) {
-		fread(&lg[i], sizeof(int), 1, file);
-		sz *= lg[i];
-		cout << lg[i] << " ";
-		
-	} // end of for
-	cout << endl;
-	cout << "size: " << sz << endl;
-
-
-	// remaing bytes: data (double)
-	fread(Y, sizeof(double), sz, file);
-
-	// debug: dump all data
-	for (int i = 0; i < sz; i++)
-		cout << Y[i] << " ";
-	cout << endl;
-	
-	fclose(file);
-	return 0;
-}
-
-void writeBinary(string filename, int dim, int *lg, double *Y) {
-	
-	FILE *file;
-	char filename_char[20];
-	strcpy(filename_char, filename.c_str()); 
-	file = fopen(filename_char , "wb");
-	
-	// first byte: dimension number
-	fwrite(&dim, sizeof(int), 1, file);
-
-	// 2nd~4th bytes: size in each dimension
-	int sz = 1;
-	for (int i = 0; i < dim; i++) {
-		sz *= lg[i];
-		fwrite(&lg[i], sizeof(int), 1, file);
-	}
-
-	// remaing bytes: data (double)
-	fwrite(Y, sizeof(double), sz, file);	
-
-	// close file
-	fclose(file);
-}
 
 int toDo(int N, int myrank, int world_size) {
 	int num = floor((N*1.0)/world_size);
