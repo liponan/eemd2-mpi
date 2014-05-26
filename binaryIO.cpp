@@ -36,7 +36,7 @@ int readBinaryImage(double *Y, string filename) {
 	rewind(file);
 
 	int dim = 0;
-	int lg[3] = {0};
+	int lg[3] = {1};
 
 	// first byte: dimension number
 	fread(&dim, sizeof(int), 1, file);

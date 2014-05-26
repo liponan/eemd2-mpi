@@ -38,7 +38,7 @@ int main(int argc, char *argv[])
 	int dt, eta_time;
 	int dim = 0;
 	int d = 0;
-	int lg[3] = {0};
+	int lg[3] = {1};
 	bool flag = true;
 	int H, W, SZ;
 
@@ -94,8 +94,6 @@ int main(int argc, char *argv[])
 		img = new double[SZ];
 		bin_flag2 = readBinaryImage(img, argv[1]);
 	} // end of if (world_rank == 0)
-
-	//MPI_Bcast(img, SZ, MPI_DOUBLE, 0, MPI_COMM_WORLD); // broadcast the IMG data to all nodes
 
 	// find the parameters or use the default values
 	int goal = 3;
@@ -190,11 +188,6 @@ int main(int argc, char *argv[])
 		for (i = 0; i < H*goalt; i++)
 			myModes1[i + t * H*goalt] = outTmp1[i];
 	}
-	// char metaFilename[10];
-	// sprintf(metaFilename,"meta%d.m", world_rank);
-	// string metaStr(metaFilename);
-	// int lg0[3] = {myTodo, H, goalt};
-	// printArray(metaFilename, myModes1, 3, lg0);
 	delete[] img, myBuff1, inTmp1, outTmp1;
 
 	// gather and re-sort the data: rootBuff1 => modes1
@@ -205,11 +198,8 @@ int main(int argc, char *argv[])
 		for (k = 0; k < goalt; k++)
 			for (i = 0; i < H; i++)
 				for (j = 0; j < W; j++)
-					modes1[i + H*(j + k*W)] = rootBuff1[i + H*(k + j*goalt)];
-	//string metaFilename = "meta1.m";
-	//int lg0[3] = {H, W, goalt};
-	//printArray(metaFilename, modes1, 3, lg0);
-	}
+			 		modes1[i + H*(j + k*W)] = rootBuff1[i + H*(k + j*goalt)];
+	} // end of if
 	delete[] myModes1, rootBuff1;
 	t2 = MPI_Wtime();
 	dt = t2 - t1;
@@ -218,9 +208,10 @@ int main(int argc, char *argv[])
 	
 
 	// for #2 dimension: solve for each COL in each MODE
+	
 	//MPI_Bcast(modes1, SZ*goalt, MPI_DOUBLE, 0, MPI_COMM_WORLD); // seed for 2nd EEMD phase
 	myTodo = toDo(H, world_rank, world_size);
-	// cout << "Node " << world_rank << " gets " << myTodo << " jobs to do..." << endl;
+	
 	// buffers for each mode only
 	double *modeBuff2in = new double[SZ]; // buffer for each mode from modes1
 	double *myBuff2 = new double[mCnts[world_rank]];
@@ -304,16 +295,19 @@ int main(int argc, char *argv[])
 		cout << "Done! Writing to file... " << endl;
 		int dim2 = 3;
 		int lg2[3] = {H, W, goalt};
-		//int timecode = (int)time(NULL) % 10000;
-		//char timecode_str[4];
-		//sprintf(timecode_str, "%d", timecode);
+
 		string filenameStr(argv[1]);
 		string filename_export // v
 		 = string(filenameStr,0,filenameStr.length()-0)+"_" + timecode_str + ".modes";
 		string filename_log    // v
 		 = string(filenameStr,0,filenameStr.length()-0)+"_" + timecode_str + ".log";
+		
+		// write output file
 		writeBinary(filename_export, dim2, lg2, modes);
+		
 		cout << filename_export << " exported!" << endl;
+
+		/* write log file */
 		ofstream fout(filename_log.c_str());
 		fout << "Input: " << filenameStr << endl;
 		fout << "# of modes: " << goal << endl;
@@ -322,13 +316,13 @@ int main(int argc, char *argv[])
 		fout << "# of cores: " << world_size << endl;
 		fout << "Elapsed time: " << t4 - t1 << "s" << endl;
 		fout.close();
+
 		cout << "Elapsed time: " << t4 - t1 << "s" << endl;
 	}
 	MPI_Finalize();
 	delete[] modes;
 	return 0;
 }
-
 
 
 int toDo(int N, int myrank, int world_size) {
