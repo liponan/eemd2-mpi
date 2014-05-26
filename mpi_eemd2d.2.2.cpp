@@ -21,7 +21,8 @@
 
 	using namespace std;
 
-	void readBinary(string, double*, int, int*);
+	int readBinaryHeader(int* dim, int* lg, string filename);
+	int readBinaryImage(double *Y, string filename);
 	void writeBinary(string filename, int dim, int* lg, double *Y);
 	int toDo(int, int, int);
 
@@ -39,12 +40,15 @@ int main(int argc, char *argv[])
 	int dt, eta_time;
 	int dim = 0;
 	int d = 0;
-	int lg[3] = {0};
+	int lg[3] = {1};
 	bool flag = true;
 	int H, W, SZ;
 
 	ifstream fin;
 	string tmpStr;
+
+	int bin_flag1 = 1;
+	int bin_flag2 = 1;
 
 	if (world_rank == 0) {
 		
@@ -54,22 +58,16 @@ int main(int argc, char *argv[])
 			return 0;
 		} else {
 			cout << "Loading " << argv[1] << endl;
-			fin.open(argv[1]);
-			if (fin)
+			bin_flag1 = readBinaryHeader(&dim, lg, argv[1]);
+			if (bin_flag1 == 0)
 				flag = false;
 			else {
 				cout << "Can't open " << argv[1] << ". Please try again... " << endl;
-				return 0;
+				return 1;
 			}
 		}
 			
 		// read the header
-		getline(fin, tmpStr, ',');
-		dim = atoi(tmpStr.c_str());
-		for (d = 0; d < dim; d++) {
-			getline(fin, tmpStr, ',');
-			lg[d] = atoi(tmpStr.c_str());
-		}
 		W = lg[1];
 		H = lg[0];
 		SZ = H * W;
@@ -79,8 +77,6 @@ int main(int argc, char *argv[])
 	MPI_Bcast(&dim, 1, MPI_INT, 0, MPI_COMM_WORLD); // broadcast the dimension dim
 	MPI_Bcast(&H,   1, MPI_INT, 0, MPI_COMM_WORLD); // broadcast the height H
 	MPI_Bcast(&W,   1, MPI_INT, 0, MPI_COMM_WORLD); // broadcast the width W
-
-	//cout << SZ << " " << dim << " " << H << " " << W << endl;
 
 	// print the dimensions
 	if (world_rank == 0) {
@@ -101,17 +97,7 @@ int main(int argc, char *argv[])
 	// load the image into memory
 	if (world_rank == 0) {
 		img = new double[SZ];
-		t = 0;
-		while (t++ < SZ) {
-			getline(fin, tmpStr, ',');
-			tmpNum = atof(tmpStr.c_str()); 
-			img[i + j * H] = tmpNum; // normal copy
-			j++;
-			if (j == W) {
-				i++;
-				j = 0;
-			}
-		}
+		bin_flag2 = readBinaryImage(img, argv[1]);
 	} // end of if (world_rank == 0)
 
 	//MPI_Bcast(img, SZ, MPI_DOUBLE, 0, MPI_COMM_WORLD); // broadcast the IMG data to all nodes
@@ -348,13 +334,52 @@ int main(int argc, char *argv[])
 	return 0;
 }
 
+int readBinaryHeader(int* dim, int* lg, string filename) {
+	FILE *file;
+	char filename_char[20];
+	strcpy(filename_char, filename.c_str()); 
+	file = fopen(filename_char , "r");
+
+	// first byte: dimension number
+	fread(dim, sizeof(int), 1, file);
+
+	// 2nd~4th bytes: size in each dimension
+	for (int i = 0; i < *dim; i++) {
+		fread(&lg[i], sizeof(int), 1, file);
+	} // end of for
+	return 0;
+}
+
+int readBinaryImage(double *Y, string filename) {
+	FILE *file;
+	char filename_char[20];
+	strcpy(filename_char, filename.c_str()); 
+	file = fopen(filename_char , "r");
+
+	int dim = 0;
+	int lg[3] = {1};
+
+	// first byte: dimension number
+	fread(&dim, sizeof(int), 1, file);
+
+	// 2nd~4th bytes: size in each dimension
+	int sz = 1;
+	for (int i = 0; i < dim; i++) {
+		sz *= lg[i];
+		fread(&lg[i], sizeof(int), 1, file);
+	} // end of for
+
+	// remaing bytes: data (double)
+	fread(Y, sizeof(double), sz, file);
+	return 0;
+}
 
 void writeBinary(string filename, int dim, int* lg, double *Y) {
 	
 	FILE *file;
 	char filename_char[20];
 	strcpy(filename_char, filename.c_str()); 
-	file = fopen(filename_char , "wb");
+	file = fopen(filename_char , "w");
 
 	
 	// first byte: dimension number
