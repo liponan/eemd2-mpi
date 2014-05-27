@@ -1,4 +1,4 @@
-function data = bin2m(filename)
+function data = bin2m_eemd(filename)
 
 	fid = fopen(filename, 'r');
 	dim = fread(fid, 1, 'int');
