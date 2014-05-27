@@ -54,6 +54,7 @@ int main(int argc, char *argv[])
 		} else {
 			cout << "Loading " << argv[1] << endl;
 			bin_flag1 = readBinaryHeader(&dim, lg, argv[1]);
+			cout << "Loaded! " << argv[1] << endl;
 			if (bin_flag1 == 0)
 				flag = false;
 			else {
@@ -321,6 +322,8 @@ int main(int argc, char *argv[])
 	}
 	MPI_Finalize();
 	delete[] modes;
+	delete[] mCnts, mDisps, nCnts, nDisps;
+	delete[] uCnts, uDisps, vCnts, vDisps;
 	return 0;
 }
 
