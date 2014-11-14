@@ -7,7 +7,6 @@
 #include <iostream>
 
 void randn(double *W, int sz) {
-	srand((int)time(NULL));
 	//srand(0);
 	double u = 0;
 	double v = 0;
@@ -45,18 +44,14 @@ double Std(double *Y, int sz) {
 void eemd(double *modes,
 		double *Y, int sz, int goal, int ens, double nstd) {
 
+	srand((int)time(NULL));
+
 	int m, i, c, k, t;
-	
-
-	/* parse input arguments */
-
 	int goal1 = goal + 1;
 	int MAX = sz;
 	int GMX = goal1;
 
 	/* create output arguments */
-
-	/* Core function */
 	double *m1 = new double[GMX*MAX];
 	double *m2 = new double[GMX*MAX];
 	double *tmp = new double[GMX*MAX];
@@ -64,7 +59,7 @@ void eemd(double *modes,
 	double *Y1 = new double[MAX];
 	double *Y2 = new double[MAX];
 	double sigma = Std(Y, sz);
-    //printf("Initializing... \n");
+
     for (t = 0; t < sz*goal1; t++)
         tmp[t] = 0;
 	for (k = 0; k < ens; k++) {
@@ -86,7 +81,6 @@ void eemd(double *modes,
 			emd_core(m2, Y2, sz, goal);
 
 		for (t = 0; t < sz*goal1; t++) {
-            //printf("%f <= %f \n", tmp[t], m1[t] + m2[t]);
 			tmp[t] = tmp[t] + m1[t];
 			if (nstd > 0)
 				tmp[t] = tmp[t] + m2[t];
