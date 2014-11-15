@@ -5,6 +5,7 @@
 // v.2.1    2014/05/05 : Better memory ultilization
 // v.2.2 	2014/05/07 : use binary file for export
 // v.2.3 	2014/05/26 : read binary file as input
+// v.2.4    2014/11/15 : fix memory leak
 
 
 
