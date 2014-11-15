@@ -189,7 +189,10 @@ int main(int argc, char *argv[])
 		for (i = 0; i < H*goalt; i++)
 			myModes1[i + t * H*goalt] = outTmp1[i];
 	}
-	delete[] img, myBuff1, inTmp1, outTmp1;
+	delete[] img;
+	delete[] myBuff1;
+	delete[] inTmp1;
+	delete[] outTmp1;
 
 	// gather and re-sort the data: rootBuff1 => modes1
 	MPI_Gatherv(myModes1, vCnts[world_rank], MPI_DOUBLE, 
@@ -201,7 +204,8 @@ int main(int argc, char *argv[])
 				for (j = 0; j < W; j++)
 			 		modes1[i + H*(j + k*W)] = rootBuff1[i + H*(k + j*goalt)];
 	} // end of if
-	delete[] myModes1, rootBuff1;
+	delete[] myModes1;
+	delete[] rootBuff1;
 	t2 = MPI_Wtime();
 	dt = t2 - t1;
 	if (world_rank == 0)
