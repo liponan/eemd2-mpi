@@ -103,5 +103,6 @@ void emd_core(double *modes,
 	delete [] emean;
 	delete [] h;
 	delete [] r;
+
 	}
 	

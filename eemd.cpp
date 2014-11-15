@@ -92,12 +92,14 @@ void eemd(double *modes,
 	else
 		for (t = 0; t < sz*goal1; t++)
 			modes[t] = tmp[t]*sigma / ens;
+
 	delete[] m1;
 	delete[] m2;
 	delete[] tmp;
 	delete[] wn;
 	delete[] Y1;
 	delete[] Y2;
+
 
 } // end of eemd
 	
