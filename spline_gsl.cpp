@@ -8,14 +8,10 @@ void spline(double *YY,
 
 	// m1: length of discrete extremas
 	// m2: length of original data points
-	// m3: used to cheat gsl_spline_alloc
-	int m3 = m1;
-	if (m1 < 3)
-		m3 = m2;
 
 	gsl_interp_accel *acc = gsl_interp_accel_alloc ();
   	//const gsl_interp_type *t = gsl_interp_cspline; 
-  	gsl_spline *spline = gsl_spline_alloc (gsl_interp_cspline, m3);
+  	gsl_spline *spline = NULL;
 
 	/* Core function */
   	double *xd = new double[m1];
@@ -25,13 +21,13 @@ void spline(double *YY,
 
 	double m; // slope for linear interpolation
 	
-	if (m1 > 3 ) { // use spline
+	if (m1 > 2 ) { // use spline
+		spline = gsl_spline_alloc (gsl_interp_cspline, m1);
 		gsl_spline_init (spline, xd, Y, m1);
 		for (int j = 0; j < m2; j++) {
 			YY[j] = gsl_spline_eval (spline, j, acc);
 		} // end of for-j
 	} // end of if
-
 	else {
 		m = (Y[1] - Y[0]) / (m2 - 1);
 		for (int j = 0; j < m2; j++) {
@@ -40,6 +36,6 @@ void spline(double *YY,
 	} //end of else
 
 	delete[] xd;
-	gsl_interp_accel_free (acc);
 	gsl_spline_free (spline);
+	gsl_interp_accel_free (acc);
 }
