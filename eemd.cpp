@@ -30,12 +30,12 @@ double Std(double *Y, int sz) {
 		// 	system("PAUSE");
 		// }
 	}
-	if (sigma > 0)
+	if (sigma > 0.0001)
 		sigma = sqrt( sigma / sz );
 	else {
 		// std::cout << "Error! sigma^2 = " << sigma << " before taking square root!" << endl;
 		// system("PAUSE");
-		sigma = 0;
+		sigma = 1;
 	}
 	//std::cout << "sigma = " << sigma << endl; 
 	return sigma;
