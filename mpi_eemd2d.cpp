@@ -41,7 +41,7 @@ int main(int argc, char *argv[])
 	int d = 0;
 	int lg[3] = {1};
 	bool flag = true;
-	int H, W, SZ;
+	unsigned long int H, W, SZ;
 
 	int bin_flag1 = 1;
 	int bin_flag2 = 1;
@@ -117,7 +117,7 @@ int main(int argc, char *argv[])
 		default:
 			break;
 	}
-	int goalt = goal + 1;
+	long unsigned int goalt = goal + 1;
 
 	char timecode_str[5];
 	sprintf(timecode_str, "%d", timecode);
