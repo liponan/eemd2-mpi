@@ -41,7 +41,7 @@ int main(int argc, char *argv[])
 	int d = 0;
 	int lg[3] = {1};
 	bool flag = true;
-	unsigned long int H, W, SZ;
+	int H, W, SZ;
 
 	int bin_flag1 = 1;
 	int bin_flag2 = 1;
