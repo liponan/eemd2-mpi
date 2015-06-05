@@ -9,13 +9,13 @@ Require GSL (GNU Scientific Library) and MPI
 Intel compiler:
 
 ```
-mpicxx mpi_eemd2d.2.2.cpp -lgsl -lgslcblas -lm -O3 -o mpi-eemd2
+mpicxx mpi_eemd2d.cpp -lgsl -lgslcblas -lm -O3 -o mpi-eemd2
 ```
 
 # Running command example
 
 ```
-mpirun -np 24 ./mpi-eemd2 lena.txt 3 100 0.1
+mpirun -np 24 ./mpi-eemd2 lena 3 100 0.1
 ```
 ## Arguments
 - First argument: input file in CSV style with first number indicating the number of dimension (i.e. 3), followed by three integers indicating the size in three dimensions. Remaining values are the elements of the input data in 1-D array style.
