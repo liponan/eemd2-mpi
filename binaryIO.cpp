@@ -12,7 +12,7 @@ void writeBinary(string filename, int dim, int* lg, double *Y);
 
 int readBinaryHeader(int *dim, int *lg, string filename) {
 	FILE *file;
-	char filename_char[20];
+	char filename_char[256];
 	strcpy(filename_char, filename.c_str()); 
 	file = fopen(filename_char , "rb");
 
@@ -30,7 +30,7 @@ int readBinaryHeader(int *dim, int *lg, string filename) {
 
 int readBinaryImage(double *Y, string filename) {
 	FILE *file;
-	char filename_char[20];
+	char filename_char[256];
 	strcpy(filename_char, filename.c_str()); 
 	file = fopen(filename_char , "rb");
 	rewind(file);
@@ -58,7 +58,7 @@ int readBinaryImage(double *Y, string filename) {
 void writeBinary(string filename, int dim, int *lg, double *Y) {
 	
 	FILE *file;
-	char filename_char[20];
+	char filename_char[256];
 	strcpy(filename_char, filename.c_str()); 
 	file = fopen(filename_char , "wb");
 	
